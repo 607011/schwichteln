@@ -11,10 +11,10 @@ class Player {
   constructor(idx, items, others) {
     this.idx = idx;
     this.owned = [items[idx]]  // list of owned items
-    this.wanted = items[randint(0, items.length)];  // TODO: should be a list of probabilities
+    this.wanted = items[randint(0, items.length)];  // TODO: should be a list of probabilities in descending order for each item available; `keep_probability` will then be obsolete
+    this.keep_probability = 0.01;  // probability an unwanted item is kept when a 6 is rolled
     this.cache = null;  // kept item
     this.can_exchange = true;  // user can exchange an item he owns for the item in his cache
-    this.keep_probability = 0.01;  // probability an unwanted item is kept when a 6 is rolled
     this.others = others;  // list of all players
   }
 
@@ -102,9 +102,7 @@ onmessage = e => {
         t0 = this.performance.now();
       }
       ++callCount;
-      let t = this.performance.now();
       players.forEach(player => player.rollDice());
-      let ms = this.performance.now() - t;
       let result = {
         players: players.map(player => player.data()),
         dt: this.performance.now() - t0,
