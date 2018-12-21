@@ -1,8 +1,6 @@
 (function(window) {
 'use strict';
 
-let tableEl = null;
-let statsEl = null;
 const MaxCounter = 10000000;
 
 
@@ -15,25 +13,23 @@ let shuffle = a => {
 }
 
 let main = () => {
+  let tableEl = document.getElementById('table');
+  let statsEl = document.getElementById('stats');
   let worker = new Worker('worker.js');
   let items = ['&#x1F354;', '&#x1F355;', '&#x1F356;', '&#x1F357;', '&#x1F35B;', '&#x1F35C;', '&#x1F35D;', '&#x1F35F;', '&#x1F366;', '&#x1F369;', '	&#x1F36B;'];
   const N = items.length;
-  statsEl = document.getElementById('stats');
-  tableEl = document.getElementById('table');
   let players = [];
   let running = true;
 
   document.getElementById('button-stop').addEventListener('click', () => {
-    console.log('start/stop');
     running = !running;
   });
   document.getElementById('button-restart').addEventListener('click', () => {
-    console.log('restart');
-    running = true;
     init();
   });
 
   let init = () => {
+    running = true;
     while (tableEl.firstChild) {
       tableEl.removeChild(tableEl.firstChild);
     }
