@@ -13,55 +13,11 @@ let shuffle = a => {
 let main = () => {
   let tableEl = document.getElementById('table');
   let statsEl = document.getElementById('stats');
-  let worker = new Worker('worker.js');
-  let items = ['&#x1F354;', '&#x1F355;', '&#x1F356;', '&#x1F357;', '&#x1F35B;', '&#x1F35C;', '&#x1F35D;', '&#x1F35F;', '&#x1F366;', '&#x1F369;', '	&#x1F36B;'];
+  let items = ['&#x1F354;', '&#x1F355;', '&#x1F356;', '&#x1F357;', '&#x1F35B;', '&#x1F35C;', '&#x1F35D;', '&#x1F35F;', '&#x1F366;', '&#x1F369;', '&#x1F36B;'];
   const N = items.length;
   let players = [];
   let running = true;
-
-  document.getElementById('button-stop').addEventListener('click', () => {
-    running = !running;
-  });
-  document.getElementById('button-restart').addEventListener('click', () => {
-    init();
-  });
-
-  let init = () => {
-    running = true;
-    while (tableEl.firstChild) {
-      tableEl.removeChild(tableEl.firstChild);
-    }
-    players = [];
-    for (let i = 0; i < N; ++i) {
-      let playerDiv = document.createElement('div');
-      playerDiv.className = 'player';
-      let wantedDiv = document.createElement('div');
-      wantedDiv.className = 'wanted';
-      let itemsDiv = document.createElement('div');
-      itemsDiv.className = 'items';
-      itemsDiv.setAttribute('id', `player-items-${i}`);
-      let cacheDiv = document.createElement('div');
-      cacheDiv.className = 'cache';
-      itemsDiv.setAttribute('id', `player-cache-${i}`);
-      playerDiv.appendChild(itemsDiv);
-      playerDiv.appendChild(cacheDiv);
-      playerDiv.appendChild(wantedDiv);
-      players.push({
-        wanted: wantedDiv,
-        items: itemsDiv,
-        cache: cacheDiv
-      });
-      tableEl.appendChild(playerDiv);
-    }  
-    shuffle(items);
-    worker.postMessage(JSON.stringify({
-      cmd: 'initialize',
-      N: N,
-      items: items
-    }));
-  }
-
-  init();
+  let worker = new Worker('worker.js');
 
   worker.onmessage = e => {
     let data = JSON.parse(e.data);
@@ -88,6 +44,47 @@ let main = () => {
     }  
   };
 
+  document.getElementById('button-stop').addEventListener('click', () => {
+    running = !running;
+  });
+  document.getElementById('button-restart').addEventListener('click', () => {
+    init();
+  });
+
+  let init = () => {
+    running = true;
+    while (tableEl.firstChild) {
+      tableEl.removeChild(tableEl.firstChild);
+    }
+    players = [];
+    for (let i = 0; i < N; ++i) {
+      let playerDiv = document.createElement('div');
+      playerDiv.className = 'player';
+      let wantedDiv = document.createElement('div');
+      wantedDiv.className = 'wanted';
+      let itemsDiv = document.createElement('div');
+      itemsDiv.className = 'items';
+      let cacheDiv = document.createElement('div');
+      cacheDiv.className = 'cache';
+      playerDiv.appendChild(itemsDiv);
+      playerDiv.appendChild(cacheDiv);
+      playerDiv.appendChild(wantedDiv);
+      players.push({
+        wanted: wantedDiv,
+        items: itemsDiv,
+        cache: cacheDiv
+      });
+      tableEl.appendChild(playerDiv);
+    }  
+    shuffle(items);
+    worker.postMessage(JSON.stringify({
+      cmd: 'initialize',
+      N: N,
+      items: items
+    }));
+  }
+
+  init();
 }
 
 window.addEventListener('load', main);
