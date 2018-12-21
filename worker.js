@@ -1,10 +1,6 @@
 // Copyright (c) 2018 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
 // All rights reserved.
 
-let count = 0;
-let callCount = 0;
-let t0 = null;
-
 let randint = (lo, hi) => Math.floor(lo + Math.random() * hi);
 
 class Player {
@@ -19,14 +15,14 @@ class Player {
   }
 
   handOverTo(direction) {
-    let choice;
-    for (choice in this.owned) {
-      if (this.owned[choice] != this.wanted)
+    let choiceIdx;
+    for (choiceIdx in this.owned) {
+      if (this.owned[choiceIdx] != this.wanted)
         break;
     }
     let receiver = this.others[(this.idx + this.others.length + direction) % this.others.length];
-    receiver.take(this.owned[choice]);
-    this.owned.splice(choice, 1);
+    receiver.take(this.owned[choiceIdx]);
+    this.owned.splice(choiceIdx, 1);
   }
 
   take(item) {
@@ -49,9 +45,9 @@ class Player {
         }
       }
       else if (this.keep_probability > Math.random() && this.cache === null) {
-        let choice = randint(0, this.owned.length);
-        this.cache = this.owned[choice];
-        this.owned.splice(choice, 1);
+        let choiceIdx = randint(0, this.owned.length);
+        this.cache = this.owned[choiceIdx];
+        this.owned.splice(choiceIdx, 1);
       }
     }
     else if (pips % 2 === 0) {
@@ -77,6 +73,9 @@ Player.TO_RIGHT = +1;
 
 let N = 6;
 let players = [];
+let count = 0;
+let callCount = 0;
+let t0 = null;
 
 onmessage = e => {
   let data = JSON.parse(e.data);

@@ -16,7 +16,7 @@ let shuffle = a => {
 
 let main = () => {
   let worker = new Worker('worker.js');
-  let items = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+  let items = ['&#x1F354;', '&#x1F355;', '&#x1F356;', '&#x1F357;', '&#x1F35B;', '&#x1F35C;', '&#x1F35D;', '&#x1F35F;', '&#x1F366;', '&#x1F369;', '	&#x1F36B;'];
   const N = items.length;
   statsEl = document.getElementById('stats');
   tableEl = document.getElementById('table');
@@ -75,9 +75,9 @@ let main = () => {
       statsEl.innerText = `${(1e-3*data.dt).toFixed(1)} s\n${data.callCount}`;
       let itemsLeft = data.players.map(player => player.owned).flat();
       data.players.forEach(player => {
-        players[player.idx].items.innerText = player.owned.join('');
-        players[player.idx].cache.innerText = player.cache;
-        players[player.idx].wanted.innerText = player.wanted;
+        players[player.idx].items.innerHTML = player.owned.join('');
+        players[player.idx].cache.innerHTML = player.cache;
+        players[player.idx].wanted.innerHTML = player.wanted;
         if (player.cache === undefined)
           running = false;
       });
