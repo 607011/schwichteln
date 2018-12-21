@@ -1,15 +1,13 @@
 (function(window) {
 'use strict';
 
-const MaxCounter = 10000000;
-
+const MaxCounter = 1000;
 
 let shuffle = a => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
-  return a;
 }
 
 let main = () => {
@@ -65,27 +63,25 @@ let main = () => {
 
   init();
 
-  worker.onmessage = function(e) {
+  worker.onmessage = e => {
     let data = JSON.parse(e.data);
-    if (data.callCount !== undefined && data.callCount < MaxCounter) {
-      statsEl.innerText = `${(1e-3*data.dt).toFixed(1)} s\n${data.callCount}`;
-      let itemsLeft = data.players.map(player => player.owned).flat();
+    if (data.callCount !== undefined) {
+      statsEl.innerText = `#${data.callCount} | ${(1e-3*data.dt).toFixed(1)}s`;
       data.players.forEach(player => {
         players[player.idx].items.innerHTML = player.owned.join('');
         players[player.idx].cache.innerHTML = player.cache;
         players[player.idx].wanted.innerHTML = player.wanted;
-        if (player.cache === undefined)
-          running = false;
       });
-      if (running && itemsLeft.length > 0) {
-        setTimeout(() => {
+      let itemsLeft = data.players.map(player => player.owned).flat();
+      if (running && data.callCount < MaxCounter && itemsLeft.length > 0) {
+        window.requestAnimationFrame(() => {
           worker.postMessage(JSON.stringify({
             cmd: 'continue'
           }));
-        }, 100);
+        });
       }
     }
-    else if (data.callCount === undefined) {
+    else {
       worker.postMessage(JSON.stringify({
         cmd: 'continue'
       }));
