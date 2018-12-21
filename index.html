@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="wichtel.js"></script>
+    <style type="text/css">
+    .player {
+      display: flex;
+    }
+    .items {
+      display: inline-flex;
+      padding: 0.1ex 0.5em;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: khaki;
+      min-height: 3ex;
+      min-width: 6em;
+      border-bottom: 1px solid brown;
+    }
+    .cache {
+      display: inline-flex;
+      padding: 0.1ex 0.5em;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: goldenrod;
+      min-height: 3ex;
+      min-width: 1em;
+      border-bottom: 1px solid brown;
+    }
+    .wanted {
+      display: inline-flex;
+      padding: 0.1ex 0.5em;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: gold;
+      min-height: 3ex;
+      min-width: 1em;
+      border-bottom: 1px solid brown;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="table"></div>
+    <div id="stats"></div>
+    <p>
+      <button id="button-restart">restart</button>
+      <button id="button-stop">stop</button>  
+    </p>
+  </body>
+</html>
