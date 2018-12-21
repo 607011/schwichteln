@@ -16,9 +16,8 @@ let shuffle = a => {
 
 let main = () => {
   let worker = new Worker('worker.js');
-  let N = 6;
-  let items = ['A', 'B', 'C', 'D', 'E', 'F'];
-  shuffle(items);
+  let items = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+  const N = items.length;
   statsEl = document.getElementById('stats');
   tableEl = document.getElementById('table');
   let players = [];
@@ -28,7 +27,7 @@ let main = () => {
     console.log('start/stop');
     running = !running;
   });
-  document.getElementById('button-restart').addEventListener('restart', () => {
+  document.getElementById('button-restart').addEventListener('click', () => {
     console.log('restart');
     running = true;
     init();
@@ -38,6 +37,7 @@ let main = () => {
     while (tableEl.firstChild) {
       tableEl.removeChild(tableEl.firstChild);
     }
+    players = [];
     for (let i = 0; i < N; ++i) {
       let playerDiv = document.createElement('div');
       playerDiv.className = 'player';
@@ -59,6 +59,7 @@ let main = () => {
       });
       tableEl.appendChild(playerDiv);
     }  
+    shuffle(items);
     worker.postMessage(JSON.stringify({
       cmd: 'initialize',
       N: N,
@@ -71,21 +72,21 @@ let main = () => {
   worker.onmessage = function(e) {
     let data = JSON.parse(e.data);
     if (data.callCount !== undefined && data.callCount < MaxCounter) {
-      statsEl.innerText = `${(1e-3*data.dt)} s\n${data.callCount}`;
-      //let items = data.players.map(player => player.owned).flat();
-      // console.log(items);
-      console.log(data.players);
+      statsEl.innerText = `${(1e-3*data.dt).toFixed(1)} s\n${data.callCount}`;
+      let itemsLeft = data.players.map(player => player.owned).flat();
       data.players.forEach(player => {
-        players[player.idx].items.innerText = player.owned.join(' | '); 
+        players[player.idx].items.innerText = player.owned.join('');
         players[player.idx].cache.innerText = player.cache;
         players[player.idx].wanted.innerText = player.wanted;
         if (player.cache === undefined)
           running = false;
       });
-      if (running) {
-        worker.postMessage(JSON.stringify({
-          cmd: 'continue'
-        }));  
+      if (running && itemsLeft.length > 0) {
+        setTimeout(() => {
+          worker.postMessage(JSON.stringify({
+            cmd: 'continue'
+          }));
+        }, 100);
       }
     }
     else if (data.callCount === undefined) {

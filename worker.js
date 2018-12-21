@@ -1,12 +1,17 @@
+// Copyright (c) 2018 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
+// All rights reserved.
+
 let count = 0;
 let callCount = 0;
 let t0 = null;
+
+let randint = (lo, hi) => Math.floor(lo + Math.random() * hi);
 
 class Player {
   constructor(idx, items, others) {
     this.idx = idx;
     this.owned = [items[idx]]  // list of owned items
-    this.wanted = items[Math.floor(Math.random() * items.length)];
+    this.wanted = items[randint(0, items.length)];  // TODO: should be a list of probabilities
     this.cache = null;  // kept item
     this.can_exchange = true;  // user can exchange an item he owns for the item in his cache
     this.keep_probability = 0.01;  // probability an unwanted item is kept when a 6 is rolled
@@ -14,39 +19,37 @@ class Player {
   }
 
   handOverTo(direction) {
-    let choice = 0;
-    while (choice < this.owned.length) {
+    let choice;
+    for (choice in this.owned) {
       if (this.owned[choice] != this.wanted)
         break;
-      ++choice;
     }
-    let idx = (this.idx + this.others.length + direction) % this.others.length;
-    let receiver = this.others[idx];
+    let receiver = this.others[(this.idx + this.others.length + direction) % this.others.length];
     receiver.take(this.owned[choice]);
     this.owned.splice(choice, 1);
   }
 
   take(item) {
-    this.owned.push(item)
+    this.owned.push(item);
   }
 
   rollDice() {
     if (this.owned.length === 0)
       return;
-    let pips = 1 + Math.floor(Math.random() * 6);
+    let pips = randint(1, 6);
     if (pips === 6) {
-      let choice = this.owned.indexOf(this.wanted);
-      if (choice >= 0) {
+      let wantedIdx = this.owned.indexOf(this.wanted);
+      if (wantedIdx >= 0) {
         if (this.cache === null) {
           this.cache = this.wanted;
-          this.owned.splice(choice, 1);
+          this.owned.splice(wantedIdx, 1);
         }
         else if (this.can_exchange) {
-          [this.owned[choice], this.cache] = [this.cache, this.owned[choice]];
+          [this.owned[wantedIdx], this.cache] = [this.cache, this.owned[wantedIdx]];
         }
       }
       else if (this.keep_probability > Math.random() && this.cache === null) {
-        choice = Math.floor(Math.random() * this.owned.length);
+        let choice = randint(0, this.owned.length);
         this.cache = this.owned[choice];
         this.owned.splice(choice, 1);
       }
@@ -75,10 +78,13 @@ Player.TO_RIGHT = +1;
 let N = 6;
 let players = [];
 
-onmessage = (e) => {
+onmessage = e => {
   let data = JSON.parse(e.data);
   switch(data.cmd) {
     case 'initialize': {
+      count = 0;
+      callCount = 0;
+      t0 = null;
       if (data.N > 0) {
         N = data.N
       }
@@ -88,7 +94,7 @@ onmessage = (e) => {
           players.push(new Player(i, data.items, players));
         }
       }
-      this.postMessage(JSON.stringify({state: 'ok'}));
+      postMessage(JSON.stringify({state: 'ok'}));
       break;
     }
     case 'continue': {
@@ -101,16 +107,15 @@ onmessage = (e) => {
       let ms = this.performance.now() - t;
       let result = {
         players: players.map(player => player.data()),
-        ms: ms,
         dt: this.performance.now() - t0,
         callCount: callCount,
         state: 'ok'
       };
-      this.postMessage(JSON.stringify(result));
+      postMessage(JSON.stringify(result));
       break;
     } 
     case 'stop': {
-      this.close();
+      close();
       break;
     }
     default:
