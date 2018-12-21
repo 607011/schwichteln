@@ -41,7 +41,7 @@ let main = () => {
       worker.postMessage(JSON.stringify({
         cmd: 'continue'
       }));
-    }  
+    }
   };
 
   document.getElementById('button-stop').addEventListener('click', () => {
