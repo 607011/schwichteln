@@ -1,3 +1,6 @@
+// Copyright (c) 2018-2019 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
+// All rights reserved.
+
 (function(window) {
 'use strict';
 

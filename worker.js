@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
+// Copyright (c) 2018-2019 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
 // All rights reserved.
 
 let randint = (lo, hi) => Math.floor(lo + Math.random() * hi);
@@ -58,7 +58,7 @@ class Player {
     }
   }
 
-  data() {
+  get data() {
     return {
       idx: this.idx,
       wanted: this.wanted,
@@ -103,7 +103,7 @@ onmessage = e => {
       ++callCount;
       players.forEach(player => player.rollDice());
       let result = {
-        players: players.map(player => player.data()),
+        players: players.map(player => player.data),
         dt: this.performance.now() - t0,
         callCount: callCount,
         state: 'ok'
